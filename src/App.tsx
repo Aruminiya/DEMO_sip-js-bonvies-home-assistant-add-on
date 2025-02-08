@@ -191,10 +191,21 @@ function App() {
         <hr />
         <button
           style={{ marginTop: '6px' }}
+          className='callToSomeone'
           type="button"
           onClick={(e)=>handleCall(e, '0915970815')}
+          disabled={callState === '撥號中...' || callState === '通話中' || callState === '通話已掛斷' ? true : false}
         >
-          撥打到 Leo
+          撥打給 Leo
+        </button>
+        <button
+          style={{ marginTop: '6px' }}
+          className='callToSomeone'
+          type="button"
+          onClick={(e)=>handleCall(e, '0902213273')}
+          disabled={callState === '撥號中...' || callState === '通話中' || callState === '通話已掛斷' ? true : false}
+        >
+          撥打給 Aya
         </button>
       </form>
 

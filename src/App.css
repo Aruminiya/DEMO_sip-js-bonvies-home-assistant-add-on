@@ -129,7 +129,7 @@ button:hover {
   transition: background-color 0.3s;
 }
 
-.call:disabled {
+.call:disabled, .callToSomeone:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
