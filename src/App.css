@@ -92,6 +92,7 @@ button:hover {
 
 .dial-pad button:disabled {
   opacity: 0.5;
+  cursor: pointer;
 }
 
 .control-buttons {
@@ -126,4 +127,9 @@ button:hover {
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s;
+}
+
+.call:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

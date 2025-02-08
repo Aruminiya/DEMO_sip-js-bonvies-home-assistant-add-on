@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { UserAgent, Inviter, SessionState, Session } from 'sip.js';
+import dtmfSound from './assets/dtmf.mp3'; // Import the audio file
 
 function App() {
   // 定義狀態變數
@@ -28,6 +29,8 @@ function App() {
   const handleCall = async (event: { preventDefault: () => void }, callToNumber: string | null = null) => {
     event.preventDefault(); // 阻止表單提交的默認行為
 
+    if (callToNumber) setCallNumber(callToNumber);
+    
     if (currentSession) {
       // 如果有當前的通話，則根據狀態掛斷或取消
       if (currentSession.state === SessionState.Establishing) {
@@ -129,6 +132,19 @@ function App() {
     }
   };
 
+  const dtmfAudioRef = useRef<HTMLAudioElement>(new Audio(dtmfSound)); // Create a ref for the DTMF audio
+
+  const handleDialButtonClick = (digit: string) => {
+    setCallNumber((prev) => prev + digit)
+    // Play the DTMF sound
+    if (dtmfAudioRef.current) {
+      dtmfAudioRef.current.currentTime = 0; // Reset to start
+      dtmfAudioRef.current.play()
+    }
+  };
+
+
+
   return (
     <>
       <form id="callForm" onSubmit={handleCall}>
@@ -138,8 +154,8 @@ function App() {
             <button
               key={digit}
               type="button"
-              onClick={() => setCallNumber((prev) => prev + digit)}
-              disabled={callState ? true : false}
+              onClick={() => handleDialButtonClick(digit)}
+              disabled={(callState === '撥號中...' || callState === '通話中' || callState === '通話已掛斷') ? true : false}
             >
               {digit}
             </button>
@@ -148,20 +164,24 @@ function App() {
 
         <div className="control-buttons">
           <button 
-            type="button" 
+            type="button"
+            className='clear' 
             onClick={() => setCallNumber('')} 
             style={{ backgroundColor: '#ef4444', display: !callState ? 'block' : 'none'}}
           >
-              清空
+            清空
           </button>
           <button 
             type="submit"
-            style={{ backgroundColor: currentSession ? '#ef4444' : '#0ea5e9'}}
+            className='call'
+            style={{ backgroundColor: (callState === '通話中' || callState === '通話已掛斷') ? '#ef4444' : '#0ea5e9'}}
+            disabled={callState === '撥號中...' || callState === '通話已掛斷' ? true : false}
           >
-            {currentSession ? '掛斷' : '撥打'}
+            {( callState === '通話中' || callState === '通話已掛斷') ? '掛斷' : '撥打'}
           </button>
           <button 
             type="button"
+            className='backspace'
             onClick={() => setCallNumber((prev) => prev.slice(0, -1))}
             style={{ backgroundColor: '#eab308', display: !callState ? 'block' : 'none'}}
           >
@@ -169,7 +189,13 @@ function App() {
           </button>
         </div>
         <hr />
-        <button style={{ marginTop: '6px' }} type="button" onClick={(e)=>handleCall(e, '0915970815')}>撥打到 Leo</button>
+        <button
+          style={{ marginTop: '6px' }}
+          type="button"
+          onClick={(e)=>handleCall(e, '0915970815')}
+        >
+          撥打到 Leo
+        </button>
       </form>
 
       <audio id="remoteAudio" autoPlay></audio>
