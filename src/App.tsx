@@ -34,7 +34,7 @@ function App() {
     if (currentSession) {
       // 如果有當前的通話，則根據狀態掛斷或取消
       if (currentSession.state === SessionState.Establishing) {
-        currentSession.cancel(); // 取消正在建立的呼叫
+        (currentSession as Inviter).cancel(); // 取消正在建立的呼叫
         setCallState("呼叫已取消");
       } else {
         currentSession.bye(); // 掛斷已建立的通話
