@@ -142,6 +142,14 @@ function App() {
       dtmfAudioRef.current.currentTime = 0; // Reset to start
       dtmfAudioRef.current.play()
     }
+
+     // Send DTMF if a call is active
+    if (currentSession && currentSession.state === SessionState.Established) {
+      const sessionDescriptionHandler = currentSession.sessionDescriptionHandler;
+      if (sessionDescriptionHandler) {
+        sessionDescriptionHandler.sendDtmf(digit);
+      }
+    }
   };
 
 
@@ -156,7 +164,7 @@ function App() {
               key={digit}
               type="button"
               onClick={() => handleDialButtonClick(digit)}
-              disabled={(callState === '撥號中...' || callState === '通話中' || callState === '通話已掛斷') ? true : false}
+              disabled={(callState === '撥號中...' || callState === '通話已掛斷') ? true : false}
             >
               {digit}
             </button>
@@ -207,6 +215,15 @@ function App() {
           disabled={callState === '撥號中...' || callState === '通話中' || callState === '通話已掛斷' ? true : false}
         >
           撥打給 Aya
+        </button>
+        <button
+          style={{ marginTop: '6px' }}
+          className='callToSomeone'
+          type="button"
+          onClick={(e)=>handleCall(e, '77505134')}
+          disabled={callState === '撥號中...' || callState === '通話中' || callState === '通話已掛斷' ? true : false}
+        >
+          撥打給 智能客服中心
         </button>
       </form>
 
